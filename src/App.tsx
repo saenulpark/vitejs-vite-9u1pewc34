@@ -20,6 +20,7 @@ const spendTasks: Task[] = [
   { label: "Eating out", coins: -15 },
   { label: "Delivery food", coins: -25 },
   { label: "Ice cream / snack", coins: -10 },
+  { label: "Baseball", coins: -30 },
 ];
 
 export default function App() {
@@ -46,15 +47,7 @@ export default function App() {
     setCoins((c) => c + amount);
   };
 
-  const endDayBonus = () => {
-    const lastBonus = localStorage.getItem("lastEndBonus");
-    if (lastBonus === today) {
-      alert("End-of-day bonus already claimed.");
-      return;
-    }
-    setCoins((c) => c + 10);
-    localStorage.setItem("lastEndBonus", today);
-  };
+
 
   return (
     <div className="container">
@@ -80,9 +73,7 @@ export default function App() {
       </section>
 
       <section>
-        <button className="bonus" onClick={endDayBonus}>
-          End of day bonus (+10)
-        </button>
+        
       </section>
     </div>
   );
