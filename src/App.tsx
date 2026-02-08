@@ -8,8 +8,7 @@ type Task = {
 
 const earnTasks: Task[] = [
   { label: "Workout", coins: 15 },
-  { label: "Short form video", coins: 20 },
-  { label: "Long form video", coins: 50 },
+  { label: "1 hour edit", coins: 20 },
   { label: "Cleaning the house", coins: 5 },
   { label: "24h fasting", coins: 20 },
   { label: "Complete to-do list", coins: 10 },
