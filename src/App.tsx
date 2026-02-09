@@ -21,6 +21,7 @@ const spendTasks: Task[] = [
   { label: "Delivery food", coins: -25 },
   { label: "Ice cream / snack", coins: -10 },
   { label: "Baseball", coins: -30 },
+  { label: "늦잠", coins: -25 },
 ];
 
 export default function App() {
