@@ -16,7 +16,7 @@ const earnTasks: Task[] = [
   { label: "Workout", coins: 15 },
   { label: "5 min edit", coins: 3 },
   { label: "1 hour edit", coins: 20 },
-  { label: "Cleaning the house", coins: 5 },
+  { label: "Cleaning the house", coins: 2 },
   { label: "24h fasting", coins: 20 },
   { label: "Complete to-do list", coins: 10 },
 ];
