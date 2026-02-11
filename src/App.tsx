@@ -25,9 +25,22 @@ const spendTasks: Task[] = [
 ];
 
 export default function App() {
+
+  const resetCoins = () => {
+    const confirmReset = confirm("Reset all coins to 0?");
+    if (!confirmReset) return;
+  
+    setCoins(0);
+    localStorage.removeItem("lastFreeDay");
+    localStorage.removeItem("lastEndBonus");
+  };
+  
   const [coins, setCoins] = useState<number>(() => {
-    return Number(localStorage.getItem("dodoCoins")) || 0;
-  });
+    const [coins, setCoins] = useState<number>(() => {
+      const saved = localStorage.getItem("dodoCoins");
+      return saved !== null ? Number(saved) : 0;
+    });
+    
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -45,8 +58,15 @@ export default function App() {
   }, [today]);
 
   const applyTask = (amount: number) => {
-    setCoins((c) => c + amount);
+    setCoins((c) => {
+      if (c + amount < 0) {
+        alert("Not enough coins.");
+        return c;
+      }
+      return c + amount;
+    });
   };
+  
 
 
 
