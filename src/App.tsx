@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
 type Task = {
@@ -36,6 +36,9 @@ export default function App() {
     return saved !== null ? Number(saved) : 0;
   });
 
+  const [displayCoins, setDisplayCoins] = useState(coins);
+  const prevCoins = useRef(coins);
+
   const [history, setHistory] = useState<Transaction[]>(() => {
     const saved = localStorage.getItem("dodoHistory");
     return saved ? JSON.parse(saved) : [];
@@ -51,7 +54,25 @@ export default function App() {
     localStorage.setItem("dodoHistory", JSON.stringify(history));
   }, [history]);
 
-  // Daily +2 bonus
+  // Animated balance
+  useEffect(() => {
+    const start = prevCoins.current;
+    const end = coins;
+    const duration = 400;
+    const startTime = performance.now();
+
+    const animate = (time: number) => {
+      const progress = Math.min((time - startTime) / duration, 1);
+      const value = Math.round(start + (end - start) * progress);
+      setDisplayCoins(value);
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
+    prevCoins.current = coins;
+  }, [coins]);
+
+  // Daily +2
   useEffect(() => {
     const lastFree = localStorage.getItem("lastFreeDay");
     if (lastFree !== today) {
@@ -93,19 +114,7 @@ export default function App() {
     localStorage.removeItem("dodoHistory");
   };
 
-  // -------- DAILY TOTALS --------
-  const dailyTotals = useMemo(() => {
-    const totals: Record<string, number> = {};
-
-    history.forEach((t) => {
-      const day = t.date.slice(0, 10);
-      totals[day] = (totals[day] || 0) + t.amount;
-    });
-
-    return totals;
-  }, [history]);
-
-  // -------- WEEKLY SUMMARY --------
+  // Weekly summary
   const weeklySummary = useMemo(() => {
     const now = new Date();
     const weekAgo = new Date();
@@ -130,7 +139,7 @@ export default function App() {
     };
   }, [history]);
 
-  // -------- BALANCE GRAPH --------
+  // Graph
   const balancePoints = useMemo(() => {
     const sorted = [...history].sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -165,7 +174,7 @@ export default function App() {
   return (
     <div className="container">
       <h1>🦤 Dodo Coin</h1>
-      <h2>Balance: {coins}</h2>
+      <h2 className="balance">Balance: {displayCoins}</h2>
 
       <section>
         <h3>Earn</h3>
@@ -185,55 +194,32 @@ export default function App() {
         ))}
       </section>
 
-      <section style={{ marginTop: 20 }}>
+      <section>
         <button onClick={resetCoins}>Reset Coins</button>
-        <button onClick={clearHistory} style={{ marginLeft: 10 }}>
-          Clear History
-        </button>
+        <button onClick={clearHistory}>Clear History</button>
       </section>
 
-      <section style={{ marginTop: 30 }}>
-        <h3>Weekly Summary (Last 7 Days)</h3>
+      <section>
+        <h3>Weekly Summary</h3>
         <p>Earned: +{weeklySummary.earned}</p>
         <p>Spent: {weeklySummary.spent}</p>
         <p>Net: {weeklySummary.net}</p>
         <p>Average / Day: {weeklySummary.avgPerDay.toFixed(1)}</p>
       </section>
 
-      <section style={{ marginTop: 30 }}>
-        <h3>Daily Totals</h3>
-        {Object.entries(dailyTotals)
-          .sort(([a], [b]) => (a > b ? -1 : 1))
-          .map(([day, total]) => (
-            <div key={day}>
-              {day}: {total > 0 ? "+" : ""}
-              {total}
-            </div>
-          ))}
-      </section>
-
-      <section style={{ marginTop: 30 }}>
+      <section>
         <h3>Balance Over Time</h3>
         <svg width={graphWidth} height={graphHeight}>
           <path
             d={graphPath}
             fill="none"
-            stroke="black"
+            stroke="#6be7a4"
             strokeWidth="2"
+            style={{
+              transition: "all 0.4s ease",
+            }}
           />
         </svg>
-      </section>
-
-      <section style={{ marginTop: 30 }}>
-        <h3>History</h3>
-        <div style={{ maxHeight: 200, overflowY: "auto" }}>
-          {history.map((t, i) => (
-            <div key={i}>
-              {t.label} ({t.amount > 0 ? "+" : ""}
-              {t.amount}) — {new Date(t.date).toLocaleString()}
-            </div>
-          ))}
-        </div>
       </section>
     </div>
   );

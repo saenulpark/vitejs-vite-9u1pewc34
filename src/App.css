@@ -113,7 +113,7 @@ section div {
 
 /* ===== Graph ===== */
 svg {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.014);
   border-radius: 14px;
   padding: 8px;
 }
@@ -132,4 +132,15 @@ section:last-of-type div::-webkit-scrollbar {
 section:last-of-type div::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 3px;
+}
+/* Balance animation emphasis */
+.balance {
+  font-size: 20px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+/* Button micro interaction */
+button:active {
+  transform: scale(0.97);
 }
