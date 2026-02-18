@@ -46,6 +46,7 @@ export default function App() {
 
   const today = new Date().toISOString().slice(0, 10);
 
+  // Persist
   useEffect(() => {
     localStorage.setItem("dodoCoins", coins.toString());
   }, [coins]);
@@ -72,13 +73,17 @@ export default function App() {
     prevCoins.current = coins;
   }, [coins]);
 
-  // Daily +2
+  // Daily +2 bonus
   useEffect(() => {
     const lastFree = localStorage.getItem("lastFreeDay");
     if (lastFree !== today) {
       setCoins((c) => c + 2);
       setHistory((h) => [
-        { label: "Daily Bonus", amount: 2, date: new Date().toISOString() },
+        {
+          label: "Daily Bonus",
+          amount: 2,
+          date: new Date().toISOString(),
+        },
         ...h,
       ]);
       localStorage.setItem("lastFreeDay", today);
@@ -93,7 +98,11 @@ export default function App() {
       }
 
       setHistory((h) => [
-        { label: task.label, amount: task.coins, date: new Date().toISOString() },
+        {
+          label: task.label,
+          amount: task.coins,
+          date: new Date().toISOString(),
+        },
         ...h,
       ]);
 
@@ -171,6 +180,15 @@ export default function App() {
           .join(" ")
       : "";
 
+  // Format date as YYYY.MM.DD
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}.${mm}.${dd}`;
+  };
+
   return (
     <div className="container">
       <h1>🦤 Dodo Coin</h1>
@@ -215,11 +233,23 @@ export default function App() {
             fill="none"
             stroke="#6be7a4"
             strokeWidth="2"
-            style={{
-              transition: "all 0.4s ease",
-            }}
+            style={{ transition: "all 0.4s ease" }}
           />
         </svg>
+      </section>
+
+      <section>
+        <h3>History</h3>
+        <div style={{ maxHeight: 200, overflowY: "auto" }}>
+          {history.map((t, i) => (
+            <div key={i}>
+              {formatDate(t.date)} &nbsp;
+              {t.amount > 0 ? "+" : ""}
+              {t.amount} &nbsp;
+              {t.label}
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );
